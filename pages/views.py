@@ -12,6 +12,7 @@ class HomeView(generic.ListView):
     paginate_by = 4
     template_name = 'pages/home.html'
     context_object_name = 'books'
+
     # def get_queryset(self):
     #     return Book.objects.all().order_by('price')
 
@@ -20,9 +21,10 @@ class HomeView(generic.ListView):
 def detail_page(request, pk):
     book = get_object_or_404(Book, pk=pk)
     is_favorite = False
+    is_like = False
     if book.favorite.filter(id=request.user.id).exists():
         is_favorite = True
-
+        is_like = True
     comment_book = book.comments.all()
 
     if request.method == 'POST':
@@ -37,7 +39,7 @@ def detail_page(request, pk):
         comment_form = CommentForm()
     return render(request, 'pages/detail_page.html',
                   context={'book': book, 'comment_form': comment_form, 'comments': comment_book,
-                           'is_favorite': is_favorite})
+                           'is_favorite': is_favorite, 'is_like': is_like})
 
 
 def favorite_book(request, pk):
@@ -47,6 +49,7 @@ def favorite_book(request, pk):
     else:
         book.favorite.add(request.user)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 @login_required()
 def favorite_list(request):
@@ -63,3 +66,9 @@ def search_bar(request):
         return render(request, 'search_result.html', {'searched': searched, 'books': book})
     else:
         return render(request, 'search_result.html')
+
+
+def like_book(request, pk):
+    book = get_object_or_404(Book, id=request.POST.get('book_id'))
+    book.likes.add(request.user)
+    return HttpResponseRedirect(reverse('detail_page', args=[str(pk)]))

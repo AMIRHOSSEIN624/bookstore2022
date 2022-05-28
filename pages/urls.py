@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import HomeView, detail_page, search_bar, favorite_book, favorite_list
+from .views import HomeView, detail_page, search_bar, favorite_book, favorite_list, like_book
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
@@ -7,5 +7,6 @@ urlpatterns = [
     path('search/', search_bar, name='search'),
     path('<int:pk>/favorite/', favorite_book, name='favorite_book'),
     path('favorite/list/', favorite_list, name='favorite_list'),
+    path('<int:pk>/like/', like_book, name='like_book'),
 
 ]
